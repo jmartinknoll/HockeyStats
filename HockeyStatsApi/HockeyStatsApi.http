@@ -1,0 +1,7 @@
+@HockeyStatsApi_HostAddress = http://localhost:5151
+
+# This endpoint calls your actual /team-stats API
+GET {{HockeyStatsApi_HostAddress}}/api/nhlstats/team-stats
+Accept: application/json
+
+###
