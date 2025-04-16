@@ -1,4 +1,4 @@
-﻿public class GoalieStatsLeader
+﻿public class NHLGoalieStatsLeader
 {
     public int PlayerId { get; set; }
     public string? PlayerName { get; set; }

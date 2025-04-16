@@ -11,28 +11,24 @@ namespace Brain.Helpers
     {
         public static List<Team> playoffTeams = new List<Team>()
         {
-            new() { Name = "Toronto Maple Leafs", Code = "TOR", Conference = "Eastern", Division = "Atlantic", Seed = 1 },
-            new() { Name = "Tampa Bay Lightning", Code = "TBL", Conference = "Eastern", Division = "Atlantic", Seed = 2 },
-            new() { Name = "Florida Panthers", Code = "FLA", Conference = "Eastern", Division = "Atlantic", Seed = 3 },
-            new() { Name = "Washington Capitals", Code = "WSH", Conference = "Eastern", Division = "Metropolitan", Seed = 1 },
-            new() { Name = "Carolina Hurricanes", Code = "CAR", Conference = "Eastern", Division = "Metropolitan", Seed = 2 },
-            new() { Name = "New Jersey Devils", Code = "NJD", Conference = "Eastern", Division = "Metropolitan", Seed = 3 },
-            new() { Name = "Ottawa Senators", Code = "OTT", Conference = "Eastern", Division = "Atlantic", Seed = 4 },
-            new() { Name = "Montréal Canadiens", Code = "MTL", Conference = "Eastern", Division = "Metropolitan", Seed = 4 },
-            new() { Name = "Winnipeg Jets", Code = "WPG", Conference = "Western", Division = "Central", Seed = 1 },
-            new() { Name = "Dallas Stars", Code = "DAL", Conference = "Western", Division = "Central", Seed = 2 },
-            new() { Name = "Colorado Avalanche", Code = "COL", Conference = "Western", Division = "Central", Seed = 3 },
-            new() { Name = "Vegas Golden Knights", Code = "VGK", Conference = "Western", Division = "Pacific", Seed = 1 },
-            new() { Name = "Los Angeles Kings", Code = "LAK", Conference = "Western", Division = "Pacific", Seed = 2 },
-            new() { Name = "Edmonton Oilers", Code = "EDM", Conference = "Western", Division = "Pacific", Seed = 3 },
-            new() { Name = "Minnesota Wild", Code = "MIN", Conference = "Western", Division = "Pacific", Seed = 4 },
-            new() { Name = "St. Louis Blues", Code = "STL", Conference = "Western", Division = "Central", Seed = 4 },
+            new() { Name = "Toronto Maple Leafs", Code = "TOR", Conference = "Eastern", Division = "Atlantic", Seed = 1, PenaltyMinutesPerGame = 3.2 },
+            new() { Name = "Tampa Bay Lightning", Code = "TBL", Conference = "Eastern", Division = "Atlantic", Seed = 2, PenaltyMinutesPerGame = 3.7 },
+            new() { Name = "Florida Panthers", Code = "FLA", Conference = "Eastern", Division = "Atlantic", Seed = 3, PenaltyMinutesPerGame = 4.1 },
+            new() { Name = "Washington Capitals", Code = "WSH", Conference = "Eastern", Division = "Metropolitan", Seed = 1, PenaltyMinutesPerGame = 3.5 },
+            new() { Name = "Carolina Hurricanes", Code = "CAR", Conference = "Eastern", Division = "Metropolitan", Seed = 2, PenaltyMinutesPerGame = 2.9 },
+            new() { Name = "New Jersey Devils", Code = "NJD", Conference = "Eastern", Division = "Metropolitan", Seed = 3, PenaltyMinutesPerGame = 3.0 },
+            new() { Name = "Ottawa Senators", Code = "OTT", Conference = "Eastern", Division = "Atlantic", Seed = 4, PenaltyMinutesPerGame = 4.3 },
+            new() { Name = "Montréal Canadiens", Code = "MTL", Conference = "Eastern", Division = "Metropolitan", Seed = 4, PenaltyMinutesPerGame = 3.8 },
+            new() { Name = "Winnipeg Jets", Code = "WPG", Conference = "Western", Division = "Central", Seed = 1, PenaltyMinutesPerGame = 3.6 },
+            new() { Name = "Dallas Stars", Code = "DAL", Conference = "Western", Division = "Central", Seed = 2, PenaltyMinutesPerGame = 3.1 },
+            new() { Name = "Colorado Avalanche", Code = "COL", Conference = "Western", Division = "Central", Seed = 3, PenaltyMinutesPerGame = 3.3 },
+            new() { Name = "Vegas Golden Knights", Code = "VGK", Conference = "Western", Division = "Pacific", Seed = 1, PenaltyMinutesPerGame = 3.4 },
+            new() { Name = "Los Angeles Kings", Code = "LAK", Conference = "Western", Division = "Pacific", Seed = 2, PenaltyMinutesPerGame = 2.8 },
+            new() { Name = "Edmonton Oilers", Code = "EDM", Conference = "Western", Division = "Pacific", Seed = 3, PenaltyMinutesPerGame = 3.2 },
+            new() { Name = "Minnesota Wild", Code = "MIN", Conference = "Western", Division = "Pacific", Seed = 4, PenaltyMinutesPerGame = 4.0 },
+            new() { Name = "St. Louis Blues", Code = "STL", Conference = "Western", Division = "Central", Seed = 4, PenaltyMinutesPerGame = 3.9 },
         };
 
-        public static List<Player> playersInPool = new List<Player>()
-        {
-            new() { FirstName = "Connor", LastName = "McDavid", Team = "Edmonton Oilers", TeamCode = "EDM", Position = "F" },
-        };
 
         public static Dictionary<string, string> teamCodes = new Dictionary<string, string>
         {

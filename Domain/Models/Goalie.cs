@@ -7,7 +7,7 @@ using Domain.Models.HockeyStatsApi;
 
 namespace Domain.Models
 {
-    public class Player
+    public class Goalie
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -16,16 +16,15 @@ namespace Domain.Models
         public string Position { get; set; }
 
         // Projected playoff stats
-        public int ProjectedGoals { get; set; }
-        public int ProjectedAssists { get; set; }
+        public int ProjectedWins { get; set; }
+        public int ProjectedShutouts { get; set; }
 
         // Optional: store regular season stats for reference
         public int? GamesPlayed { get; set; }
-        public int? Goals { get; set; }
-        public int? Assists { get; set; }
-        public int? Points { get; set; }
+        public int? Wins { get; set; }
+        public int? Shutouts { get; set; }
 
-        // Optional: store the source NHLSkater if needed
-        public NHLSkater? SourceStats { get; set; }
+        // Optional: store the source NHLGoalie if needed
+        public NHLGoalie? SourceStats { get; set; }
     }
 }

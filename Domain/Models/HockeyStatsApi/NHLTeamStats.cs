@@ -1,4 +1,4 @@
-﻿public class TeamStats
+﻿public class NHLTeamStats
 {
     public double? FaceoffWinPct { get; set; }
     public int? GamesPlayed { get; set; }

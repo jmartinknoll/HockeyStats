@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.HockeyStatsApi
 {
-    public class StatLeader
+    public class NHLStatLeader
     {
-        public Name? FirstName { get; set; }
-        public Name? LastName { get; set; }
+        public NHLName? FirstName { get; set; }
+        public NHLName? LastName { get; set; }
         public string? Position { get; set; }
         public double? Value { get; set; }
     }

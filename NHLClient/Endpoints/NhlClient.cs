@@ -26,8 +26,8 @@ namespace Infrastructure.NHLClient.Endpoints
 
             var content = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine("=== RAW JSON RESPONSE ===");
-            Console.WriteLine(content);
+            //Console.WriteLine("=== RAW JSON RESPONSE ===");
+            //Console.WriteLine(content);
 
             try
             {
@@ -48,7 +48,7 @@ namespace Infrastructure.NHLClient.Endpoints
         /// <param name="categories"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public async Task<Result<List<SkaterStatsLeader>>> GetCurrentSkaterStatsLeaders(string? categories = null, int? limit = null)
+        public async Task<Result<List<NHLSkaterStatsLeader>>> GetCurrentSkaterStatsLeaders(string? categories = null, int? limit = null)
         {
             var url = $"{BaseUrl}/skater-stats-leaders/current";
             var queryParams = new List<string>();
@@ -59,22 +59,22 @@ namespace Infrastructure.NHLClient.Endpoints
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
-                return Result<List<SkaterStatsLeader>>.Failed($"Request failed with status code {response.StatusCode}");
+                return Result<List<NHLSkaterStatsLeader>>.Failed($"Request failed with status code {response.StatusCode}");
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("=== CURRENT SKATERS RAW RESPONSE ===");
-            Console.WriteLine(content);
+            //Console.WriteLine("=== CURRENT SKATERS RAW RESPONSE ===");
+            //Console.WriteLine(content);
             using var doc = JsonDocument.Parse(content);
             if (!doc.RootElement.TryGetProperty("data", out var dataElement))
             {
-                return Result<List<SkaterStatsLeader>>.Failed("Missing 'data' property.");
+                return Result<List<NHLSkaterStatsLeader>>.Failed("Missing 'data' property.");
             }
 
-            var stats = JsonConvert.DeserializeObject<List<SkaterStatsLeader>>(dataElement.GetRawText());
+            var stats = JsonConvert.DeserializeObject<List<NHLSkaterStatsLeader>>(dataElement.GetRawText());
             return stats != null
-                ? Result<List<SkaterStatsLeader>>.Succeeded(stats)
-                : Result<List<SkaterStatsLeader>>.Failed("Error deserializing data.");
+                ? Result<List<NHLSkaterStatsLeader>>.Succeeded(stats)
+                : Result<List<NHLSkaterStatsLeader>>.Failed("Error deserializing data.");
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Infrastructure.NHLClient.Endpoints
         /// <param name="categories"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public async Task<Result<List<SkaterStatsLeader>>> GetSkaterStatsLeadersBySeason(string season, int gameType, string? categories = null, int? limit = null)
+        public async Task<Result<List<NHLSkaterStatsLeader>>> GetSkaterStatsLeadersBySeason(string season, int gameType, string? categories = null, int? limit = null)
         {
             var url = $"{BaseUrl}/skater-stats-leaders/{season}/{gameType}";
             var queryParams = new List<string>();
@@ -100,22 +100,22 @@ namespace Infrastructure.NHLClient.Endpoints
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
-                return Result<List<SkaterStatsLeader>>.Failed($"Request failed with status code {response.StatusCode}");
+                return Result<List<NHLSkaterStatsLeader>>.Failed($"Request failed with status code {response.StatusCode}");
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("=== SKATERS STATS BY SEASON RAW RESPONSE ===");
-            Console.WriteLine(content);
+            //Console.WriteLine("=== SKATERS STATS BY SEASON RAW RESPONSE ===");
+            //Console.WriteLine(content);
             using var doc = JsonDocument.Parse(content);
             if (!doc.RootElement.TryGetProperty("data", out var dataElement))
             {
-                return Result<List<SkaterStatsLeader>>.Failed("Missing 'data' property.");
+                return Result<List<NHLSkaterStatsLeader>>.Failed("Missing 'data' property.");
             }
 
-            var stats = JsonConvert.DeserializeObject<List<SkaterStatsLeader>>(dataElement.GetRawText());
+            var stats = JsonConvert.DeserializeObject<List<NHLSkaterStatsLeader>>(dataElement.GetRawText());
             return stats != null
-                ? Result<List<SkaterStatsLeader>>.Succeeded(stats)
-                : Result<List<SkaterStatsLeader>>.Failed("Error deserializing data.");
+                ? Result<List<NHLSkaterStatsLeader>>.Succeeded(stats)
+                : Result<List<NHLSkaterStatsLeader>>.Failed("Error deserializing data.");
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Infrastructure.NHLClient.Endpoints
         /// <param name="categories"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public async Task<Result<List<GoalieStatsLeader>>> GetCurrentGoalieStatsLeaders(string? categories = null, int? limit = null)
+        public async Task<Result<List<NHLGoalieStatsLeader>>> GetCurrentGoalieStatsLeaders(string? categories = null, int? limit = null)
         {
             var url = $"{BaseUrl}/goalie-stats-leaders/current";
             var queryParams = new List<string>();
@@ -135,20 +135,20 @@ namespace Infrastructure.NHLClient.Endpoints
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
-                return Result<List<GoalieStatsLeader>>.Failed($"Request failed with status code {response.StatusCode}");
+                return Result<List<NHLGoalieStatsLeader>>.Failed($"Request failed with status code {response.StatusCode}");
             }
 
             var content = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(content);
             if (!doc.RootElement.TryGetProperty("data", out var dataElement))
             {
-                return Result<List<GoalieStatsLeader>>.Failed("Missing 'data' property.");
+                return Result<List<NHLGoalieStatsLeader>>.Failed("Missing 'data' property.");
             }
 
-            var stats = JsonConvert.DeserializeObject<List<GoalieStatsLeader>>(dataElement.GetRawText());
+            var stats = JsonConvert.DeserializeObject<List<NHLGoalieStatsLeader>>(dataElement.GetRawText());
             return stats != null
-                ? Result<List<GoalieStatsLeader>>.Succeeded(stats)
-                : Result<List<GoalieStatsLeader>>.Failed("Error deserializing data.");
+                ? Result<List<NHLGoalieStatsLeader>>.Succeeded(stats)
+                : Result<List<NHLGoalieStatsLeader>>.Failed("Error deserializing data.");
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Infrastructure.NHLClient.Endpoints
         /// <param name="categories"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public async Task<Result<List<GoalieStatsLeader>>> GetGoalieStatsLeadersBySeason(string season, int gameType, string? categories = null, int? limit = null)
+        public async Task<Result<List<NHLGoalieStatsLeader>>> GetGoalieStatsLeadersBySeason(string season, int gameType, string? categories = null, int? limit = null)
         {
             // Build the URL with base path and route values
             var url = $"{BaseUrl}/goalie-stats-leaders/{season}/{gameType}";
@@ -178,7 +178,7 @@ namespace Infrastructure.NHLClient.Endpoints
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
-                return Result<List<GoalieStatsLeader>>.Failed($"Request failed with status code {response.StatusCode}");
+                return Result<List<NHLGoalieStatsLeader>>.Failed($"Request failed with status code {response.StatusCode}");
             }
 
             // Parse JSON response
@@ -188,16 +188,16 @@ namespace Infrastructure.NHLClient.Endpoints
             // Extract "data" property
             if (!doc.RootElement.TryGetProperty("data", out var dataElement))
             {
-                return Result<List<GoalieStatsLeader>>.Failed("Missing 'data' property.");
+                return Result<List<NHLGoalieStatsLeader>>.Failed("Missing 'data' property.");
             }
 
             // Deserialize into GoalieStatsLeader list
-            var stats = JsonConvert.DeserializeObject<List<GoalieStatsLeader>>(dataElement.GetRawText());
+            var stats = JsonConvert.DeserializeObject<List<NHLGoalieStatsLeader>>(dataElement.GetRawText());
 
             // Return result
             return stats != null
-                ? Result<List<GoalieStatsLeader>>.Succeeded(stats)
-                : Result<List<GoalieStatsLeader>>.Failed("Error deserializing data.");
+                ? Result<List<NHLGoalieStatsLeader>>.Succeeded(stats)
+                : Result<List<NHLGoalieStatsLeader>>.Failed("Error deserializing data.");
         }
 
         /// <summary>
@@ -211,26 +211,26 @@ namespace Infrastructure.NHLClient.Endpoints
         /// <param name="season"></param>
         /// <param name="gameType"></param>
         /// <returns></returns>
-        public async Task<Result<ClubStats>> GetClubStatsBySeasonAndGameType(string team, string season, int gameType)
+        public async Task<Result<NHLClubStats>> GetClubStatsBySeasonAndGameType(string team, string season, int gameType)
         {
             var url = $"{BaseUrl}/club-stats/{team}/{season}/{gameType}";
 
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
-                return Result<ClubStats>.Failed($"Request failed with status code {response.StatusCode}");
+                return Result<NHLClubStats>.Failed($"Request failed with status code {response.StatusCode}");
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("=== CLUB STATS RAW RESPONSE ===");
-            Console.WriteLine(content);
+            //Console.WriteLine("=== CLUB STATS RAW RESPONSE ===");
+            //Console.WriteLine(content);
 
             // Deserialize directly
-            var stats = JsonConvert.DeserializeObject<ClubStats>(content);
+            var stats = JsonConvert.DeserializeObject<NHLClubStats>(content);
 
             return stats != null
-                ? Result<ClubStats>.Succeeded(stats)
-                : Result<ClubStats>.Failed("Error deserializing club stats.");
+                ? Result<NHLClubStats>.Succeeded(stats)
+                : Result<NHLClubStats>.Failed("Error deserializing club stats.");
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace Infrastructure.NHLClient.Endpoints
         /// <param name="report"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<Result<List<TeamStats>>> GetTeamStats(string lang, string report, Dictionary<string, string>? parameters = null)
+        public async Task<Result<List<NHLTeamStats>>> GetTeamStats(string lang, string report, Dictionary<string, string>? parameters = null)
         {
             // Build the URL with the provided parameters
             var url = $"https://api.nhle.com/stats/rest/{lang}/team/{report}";
@@ -260,7 +260,7 @@ namespace Infrastructure.NHLClient.Endpoints
             // Check for a successful response
             if (!response.IsSuccessStatusCode)
             {
-                return Result<List<TeamStats>>.Failed("Request failed.");
+                return Result<List<NHLTeamStats>>.Failed("Request failed.");
             }
 
             // Parse the response body
@@ -270,21 +270,21 @@ namespace Infrastructure.NHLClient.Endpoints
             // Try to extract the "data" property
             if (!doc.RootElement.TryGetProperty("data", out var dataElement))
             {
-                return Result<List<TeamStats>>.Failed("Missing 'data' property.");
+                return Result<List<NHLTeamStats>>.Failed("Missing 'data' property.");
             }
 
             // Deserialize the data array into a list of TeamStats objects
-            var teamStats = JsonConvert.DeserializeObject<List<TeamStats>>(dataElement.GetRawText());
+            var teamStats = JsonConvert.DeserializeObject<List<NHLTeamStats>>(dataElement.GetRawText());
 
 
             // If deserialization failed, return a failure result
             if (teamStats == null)
             {
-                return Result<List<TeamStats>>.Failed("Error deserializing data.");
+                return Result<List<NHLTeamStats>>.Failed("Error deserializing data.");
             }
 
             // Return the successfully deserialized data wrapped in a Result
-            return Result<List<TeamStats>>.Succeeded(teamStats);
+            return Result<List<NHLTeamStats>>.Succeeded(teamStats);
         }
     }
 }

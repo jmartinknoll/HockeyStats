@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.HockeyStatsApi
 {
-    public class Name
+    public class NHLName
     {
         public string? Default { get; set; }
         public string? Cs { get; set; }

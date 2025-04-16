@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.HockeyStatsApi
 {
-    public class Skater
+    public class NHLSkater
     {
         public int? PlayerId { get; set; }
         public string? Headshot { get; set; }
-        public Name? FirstName { get; set; }
-        public Name? LastName { get; set; }
+        public NHLName? FirstName { get; set; }
+        public NHLName? LastName { get; set; }
         public string? PositionCode { get; set; }
         public int? GamesPlayed { get; set; }
         public int? Goals { get; set; }

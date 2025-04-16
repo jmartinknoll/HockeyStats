@@ -1,15 +1,17 @@
 ﻿using MediatR;
 using Domain.Interfaces;
 using Brain.Helpers;
+using Domain.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace HockeyStatsApp.Queries
 {
-    public class GetHockeyStatsQuery : IRequest<Result<List<TeamStats>>>
+    public class GetHockeyStatsQuery : IRequest<Result<List<NHLTeamStats>>>
     {
         //public
     }
 
-    public class GetHockeyStatsQueryHandler : IRequestHandler<GetHockeyStatsQuery, Result<List<TeamStats>>>
+    public class GetHockeyStatsQueryHandler : IRequestHandler<GetHockeyStatsQuery, Result<List<NHLTeamStats>>>
     {
         private readonly INhlClient _nhlClient;
 
@@ -18,7 +20,7 @@ namespace HockeyStatsApp.Queries
             _nhlClient = nhlClient;
         }
 
-        public async Task<Result<List<TeamStats>>> Handle(GetHockeyStatsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<List<NHLTeamStats>>> Handle(GetHockeyStatsQuery request, CancellationToken cancellationToken)
         {
             var playoffTeams = TeamHelpers.playoffTeams;
             var teamNames = playoffTeams.Select(t => t.Name).ToList();
@@ -29,14 +31,24 @@ namespace HockeyStatsApp.Queries
             var resTeamStats = await _nhlClient.GetTeamStats(queryParams: queryParams);
             if (!resTeamStats.Success)
             {
-                return new Result<List<TeamStats>>(false, default, resTeamStats.Code, $"Failed to retrieve team stats. Error: {resTeamStats.ErrorMessage}");
+                return new Result<List<NHLTeamStats>>(false, default, resTeamStats.Code, $"Failed to retrieve team stats. Error: {resTeamStats.ErrorMessage}");
             }
 
             var teamStats = resTeamStats.Value.Where(t => t.SeasonId == "20242025" && teamNames.Contains(t.TeamFullName)).ToList();
 
-            PlayoffHelpers.SimulatePlayoffs(playoffTeams, teamStats);
+            //var simulatedTeamStats = PlayoffHelpers.SimulatePlayoffs(playoffTeams, teamStats);
 
-            Dictionary<string, ClubStats> clubStats = new Dictionary<string, ClubStats>();
+            var results = PlayoffHelpers.RunMultipleSimulations(playoffTeams, teamStats, 1000);
+
+            foreach (var kvp in results.OrderBy(r => r.Key))
+            {
+                var stats = kvp.Value;
+                Console.WriteLine($"{stats.TeamCode} (avg over {stats.Simulations} sims): " +
+                    $"GP: {stats.AvgGamesPlayed:F1}, W: {stats.AvgWins:F1}, L: {stats.AvgLosses:F1}, " +
+                    $"GF: {stats.AvgGoalsFor:F1}, GA: {stats.AvgGoalsAgainst:F1}");
+            }
+
+            Dictionary<string, NHLClubStats> clubStats = new Dictionary<string, NHLClubStats>();
 
             foreach (var team in teamStats)
             {
@@ -46,19 +58,88 @@ namespace HockeyStatsApp.Queries
                 var resClubStats = await _nhlClient.GetClubStatsBySeasonAndGameType(teamCode, "20242025", 2);
                 if (!resClubStats.Success)
                 {
-                    return new Result<List<TeamStats>>(false, default, resClubStats.Code, $"Failed to retrieve club stats. Error: {resClubStats.ErrorMessage}");
+                    return new Result<List<NHLTeamStats>>(false, default, resClubStats.Code, $"Failed to retrieve club stats. Error: {resClubStats.ErrorMessage}");
                 }
 
                 clubStats[teamCode] = resClubStats.Value;
             }
 
+            //var firstNames = clubStats["MTL"].Skaters.Select(s => s.FirstName.Default).ToList();
+            //var lastNames = clubStats["MTL"].Skaters.Select(s => s.LastName.Default).ToList();
+            var players = PlayerHelpers.playersInPool;
+
+            foreach (var player in players)
+            {
+                var playerSeasonStats = clubStats[player.TeamCode].Skaters.Where(p => p.FirstName.Default == player.FirstName && p.LastName.Default == player.LastName).FirstOrDefault();
+                var playoffGames = results[player.TeamCode].AvgGamesPlayed;
+                PlayerHelpers.ProjectPlayerPoints(playerSeasonStats, player, playoffGames);
+                Console.WriteLine($"{player.FirstName} {player.LastName} - G: {player.ProjectedGoals} A: {player.ProjectedAssists} P: {player.ProjectedGoals + player.ProjectedAssists}");
+            }
+
+            var goalies = PlayerHelpers.goaliesInPool;
+
+            foreach (var goalie in goalies)
+            {
+                var goalieSeasonStats = clubStats[goalie.TeamCode].Goalies.Where(p => p.FirstName.Default == goalie.FirstName && p.LastName.Default == goalie.LastName).FirstOrDefault();
+                var playoffGames = results[goalie.TeamCode].AvgGamesPlayed;
+                var playoffWins = results[goalie.TeamCode].AvgWins;
+                PlayerHelpers.ProjectGoalieStats(goalieSeasonStats, goalie, playoffWins, playoffGames);
+                Console.WriteLine($"{goalie.FirstName} {goalie.LastName} - W: {goalie.ProjectedWins} SO: {goalie.ProjectedShutouts} P: {goalie.ProjectedWins + (2 * goalie.ProjectedShutouts)}");
+            }
+
+            Console.WriteLine("\n\n");
+            Console.WriteLine("Player Selections:\n");
+
+            int chunkSize = 5;
+            for (int i = 0; i < players.Count; i += chunkSize)
+            {
+                var chunk = players.Skip(i).Take(chunkSize)
+                    .OrderByDescending(p => p.ProjectedGoals + p.ProjectedAssists)
+                    .ToList();
+
+                if (chunk.Count > 0)
+                {
+                    var topPlayer = chunk[0];
+                    Console.WriteLine($"[Top Skater #{i / chunkSize + 1}] {topPlayer.FirstName} {topPlayer.LastName} - G: {topPlayer.ProjectedGoals} A: {topPlayer.ProjectedAssists} P: {topPlayer.ProjectedGoals + topPlayer.ProjectedAssists}");
+                }
+
+                if (chunk.Count > 1)
+                {
+                    var secondPlayer = chunk[1];
+                    Console.WriteLine($"[Second Skater #{i / chunkSize + 1}] {secondPlayer.FirstName} {secondPlayer.LastName} - G: {secondPlayer.ProjectedGoals} A: {secondPlayer.ProjectedAssists} P: {secondPlayer.ProjectedGoals + secondPlayer.ProjectedAssists}");
+                }
+            }
+
+            Console.WriteLine("\n\n");
+            Console.WriteLine("Goalie Selections:\n");
+
+            for (int i = 0; i < goalies.Count; i += chunkSize)
+            {
+                var chunk = goalies.Skip(i).Take(chunkSize)
+                    .OrderByDescending(g => g.ProjectedWins + 2 * g.ProjectedShutouts)
+                    .ToList();
+
+                if (chunk.Count > 0)
+                {
+                    var topGoalie = chunk[0];
+                    Console.WriteLine($"[Top Goalie #{i / chunkSize + 1}] {topGoalie.FirstName} {topGoalie.LastName} - W: {topGoalie.ProjectedWins} SO: {topGoalie.ProjectedShutouts} P: {topGoalie.ProjectedWins + 2 * topGoalie.ProjectedShutouts}");
+                }
+
+                if (chunk.Count > 1)
+                {
+                    var secondGoalie = chunk[1];
+                    Console.WriteLine($"[Second Goalie #{i / chunkSize + 1}] {secondGoalie.FirstName} {secondGoalie.LastName} - W: {secondGoalie.ProjectedWins} SO: {secondGoalie.ProjectedShutouts} P: {secondGoalie.ProjectedWins + 2 * secondGoalie.ProjectedShutouts}");
+                }
+            }
+
+
 
             //Skater Stats
-            var resSkaterStats = await _nhlClient.GetSkaterStatsLeadersBySeason("20242025", 2, limit: 1);
-            if (!resSkaterStats.Success)
-            {
-                return new Result<List<TeamStats>>(false, default, resSkaterStats.Code, $"Failed to retrieve club stats. Error: {resSkaterStats.ErrorMessage}");
-            }
+            //var resSkaterStats = await _nhlClient.GetSkaterStatsLeadersBySeason("20242025", 2, limit: 1);
+            //if (!resSkaterStats.Success)
+            //{
+            //    return new Result<List<NHLTeamStats>>(false, default, resSkaterStats.Code, $"Failed to retrieve club stats. Error: {resSkaterStats.ErrorMessage}");
+            //}
 
             //var resCurrentSkaterStats = await _nhlClient.GetCurrentSkaterStatsLeaders(limit: 2);
             //if (!resCurrentSkaterStats.Success)
@@ -86,7 +167,7 @@ namespace HockeyStatsApp.Queries
 
 
 
-            return new Result<List<TeamStats>>(true, teamStats);
+            return new Result<List<NHLTeamStats>>(true, teamStats);
         }
     }
 }
