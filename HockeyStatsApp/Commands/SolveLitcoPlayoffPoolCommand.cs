@@ -2,16 +2,15 @@
 using Domain.Interfaces;
 using Brain.Helpers;
 using Domain.Models;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace HockeyStatsApp.Queries
+namespace HockeyStatsApp.Commands
 {
-    public class GetHockeyStatsQuery : IRequest<Result<List<NHLTeamStats>>>
+    public class SolveLitcoPlayoffPoolCommand : IRequest<Result<List<NHLTeamStats>>>
     {
         //public
     }
 
-    public class GetHockeyStatsQueryHandler : IRequestHandler<GetHockeyStatsQuery, Result<List<NHLTeamStats>>>
+    public class GetHockeyStatsQueryHandler : IRequestHandler<SolveLitcoPlayoffPoolCommand, Result<List<NHLTeamStats>>>
     {
         private readonly INhlClient _nhlClient;
 
@@ -20,7 +19,7 @@ namespace HockeyStatsApp.Queries
             _nhlClient = nhlClient;
         }
 
-        public async Task<Result<List<NHLTeamStats>>> Handle(GetHockeyStatsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<List<NHLTeamStats>>> Handle(SolveLitcoPlayoffPoolCommand request, CancellationToken cancellationToken)
         {
             var playoffTeams = TeamHelpers.playoffTeams;
             var teamNames = playoffTeams.Select(t => t.Name).ToList();
@@ -161,11 +160,6 @@ namespace HockeyStatsApp.Queries
             //}
 
             var nMackinnonPoints = clubStats["COL"].Skaters?.Where(s => s.LastName.Default == "MacKinnon").Select(s => s.Points).FirstOrDefault();
-
-
-
-
-
 
             return new Result<List<NHLTeamStats>>(true, teamStats);
         }

@@ -1,6 +1,6 @@
-﻿using System.Text.Json;
-using Domain.Interfaces;
+﻿using Domain.Interfaces;
 using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Infrastructure.NHLClient.Endpoints
 {

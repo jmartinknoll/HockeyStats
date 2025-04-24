@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Models;
+﻿using Domain.Models;
 using Domain.Models.HockeyStatsApi;
 
 namespace Brain.Helpers
@@ -180,6 +175,5 @@ namespace Brain.Helpers
             new() { FirstName = "Sam", LastName = "Montembeault", Team = "Montréal Canadiens", TeamCode = "MTL", Position = "G" },
             new() { FirstName = "Stuart", LastName = "Skinner", Team = "Edmonton Oilers", TeamCode = "EDM", Position = "G" }
         };
-
     }
 }

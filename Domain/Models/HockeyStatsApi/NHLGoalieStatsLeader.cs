@@ -9,5 +9,4 @@
     public double? GoalsAgainstAverage { get; set; }
     public double? SavePercentage { get; set; }
     public int? Shutouts { get; set; }
-    // Add other relevant fields as needed
 }

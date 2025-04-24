@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.HockeyStatsApi
+﻿namespace Domain.Models.HockeyStatsApi
 {
     public class NHLName
     {
@@ -16,5 +10,4 @@ namespace Domain.Models.HockeyStatsApi
         public string? Sk { get; set; }
         public string? Sv { get; set; }
     }
-
 }

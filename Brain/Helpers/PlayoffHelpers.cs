@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Models;
+﻿using Domain.Models;
 
 namespace Brain.Helpers
 {
@@ -29,6 +24,37 @@ namespace Brain.Helpers
             }
 
             return teams;
+        }
+
+        public static Team SimulateConference(List<Team> teams, string conference, List<NHLTeamStats> statsList)
+        {
+            // Filter teams by conference (Eastern or Western)
+            var conferenceTeams = teams.Where(t => t.Conference == conference).OrderBy(t => t.Seed).ToList();
+
+            // Group teams by division dynamically
+            var divisions = conferenceTeams
+                .GroupBy(t => t.Division)
+                .ToDictionary(g => g.Key, g => g.OrderBy(t => t.Seed).ToList());
+
+            // Make sure there are exactly two divisions in each conference
+            if (divisions.Count != 2)
+                throw new Exception($"Invalid division count for {conference} conference.");
+
+            // Round 1 - First round matches for each division
+            var division1Teams = divisions.Values.First();
+            var division2Teams = divisions.Values.Last();
+
+            var d1r1 = SimulateSeries(division1Teams[0], division1Teams[3], 1, statsList);
+            var d1r2 = SimulateSeries(division1Teams[1], division1Teams[2], 1, statsList);
+            var d2r1 = SimulateSeries(division2Teams[0], division2Teams[3], 1, statsList);
+            var d2r2 = SimulateSeries(division2Teams[1], division2Teams[2], 1, statsList);
+
+            // Round 2 - Division Finals
+            var d1Winner = SimulateSeries(d1r1, d1r2, 2, statsList);
+            var d2Winner = SimulateSeries(d2r1, d2r2, 2, statsList);
+
+            // Round 3 - Conference Final
+            return SimulateSeries(d1Winner, d2Winner, 3, statsList);
         }
 
         public static Team SimulateSeries(Team team1, Team team2, int round, List<NHLTeamStats> statsList)
@@ -88,159 +114,34 @@ namespace Brain.Helpers
             return seriesWinner;
         }
 
-        public static Team SimulateConference(List<Team> teams, string conference, List<NHLTeamStats> statsList)
-        {
-            // Filter teams by conference (Eastern or Western)
-            var conferenceTeams = teams.Where(t => t.Conference == conference).OrderBy(t => t.Seed).ToList();
-
-            // Group teams by division dynamically
-            var divisions = conferenceTeams
-                .GroupBy(t => t.Division)
-                .ToDictionary(g => g.Key, g => g.OrderBy(t => t.Seed).ToList());
-
-            // Make sure there are exactly two divisions in each conference
-            if (divisions.Count != 2)
-                throw new Exception($"Invalid division count for {conference} conference.");
-
-            // Round 1 - First round matches for each division
-            var division1Teams = divisions.Values.First();
-            var division2Teams = divisions.Values.Last();
-
-            var d1r1 = SimulateSeries(division1Teams[0], division1Teams[3], 1, statsList);
-            var d1r2 = SimulateSeries(division1Teams[1], division1Teams[2], 1, statsList);
-            var d2r1 = SimulateSeries(division2Teams[0], division2Teams[3], 1, statsList);
-            var d2r2 = SimulateSeries(division2Teams[1], division2Teams[2], 1, statsList);
-
-            // Round 2 - Division Finals
-            var d1Winner = SimulateSeries(d1r1, d1r2, 2, statsList);
-            var d2Winner = SimulateSeries(d2r1, d2r2, 2, statsList);
-
-            // Round 3 - Conference Final
-            return SimulateSeries(d1Winner, d2Winner, 3, statsList);
-        }
-
-
-        public static double GetTeamStrength(NHLTeamStats stats)
-        {
-            if (stats == null) return 0;
-
-            double gpg = stats.GoalsForPerGame ?? 0;
-            double gapg = stats.GoalsAgainstPerGame ?? 0;
-            double pp = stats.PowerPlayPct ?? 0;
-            double pk = stats.PenaltyKillPct ?? 0;
-            double faceoff = stats.FaceoffWinPct ?? 0;
-            double pointPct = stats.PointPct ?? 0;
-            int regulationWins = stats.WinsInRegulation ?? 0;
-            int gamesPlayed = stats.GamesPlayed ?? 82;
-
-            // Normalize regulation wins to a 0–1 scale (if gamesPlayed > 0)
-            double regulationWinRatio = gamesPlayed > 0 ? (double)regulationWins / gamesPlayed : 0;
-
-            // Weighted strength calculation
-            return
-                (gpg * 2.0) -               // offense
-                (gapg * 1.5) +              // defense
-                (pp * 0.5) +                // power play
-                (pk * 0.5) +                // penalty kill
-                (faceoff * 0.25) +          // faceoffs
-                (pointPct * 1.5) +          // overall performance
-                (regulationWinRatio * 10);  // bonus for winning in regulation
-        }
-
-
-        //public static Team SimulateGame(Team teamA, Team teamB, TeamStats statsA, TeamStats statsB)
+        //public static double GetTeamStrength(NHLTeamStats stats)
         //{
-        //    Random rng = new();
+        //    if (stats == null) return 0;
 
-        //    double strengthA = GetTeamStrength(statsA);
-        //    double strengthB = GetTeamStrength(statsB);
-        //    double total = strengthA + strengthB;
-        //    double chanceA = strengthA / total;
+        //    double gpg = stats.GoalsForPerGame ?? 0;
+        //    double gapg = stats.GoalsAgainstPerGame ?? 0;
+        //    double pp = stats.PowerPlayPct ?? 0;
+        //    double pk = stats.PenaltyKillPct ?? 0;
+        //    double faceoff = stats.FaceoffWinPct ?? 0;
+        //    double pointPct = stats.PointPct ?? 0;
+        //    int regulationWins = stats.WinsInRegulation ?? 0;
+        //    int gamesPlayed = stats.GamesPlayed ?? 82;
 
-        //    Console.WriteLine($"Simulating: {teamA.Name} (Strength: {strengthA:F2}) vs {teamB.Name} (Strength: {strengthB:F2})");
-        //    Console.WriteLine($"Chance {teamA.Name} wins: {(chanceA * 100):F1}%");
+        //    // Normalize regulation wins to a 0–1 scale (if gamesPlayed > 0)
+        //    double regulationWinRatio = gamesPlayed > 0 ? (double)regulationWins / gamesPlayed : 0;
 
-        //    return rng.NextDouble() < chanceA ? teamA : teamB;
+        //    // Weighted strength calculation
+        //    return
+        //        (gpg * 2.0) -               // offense
+        //        (gapg * 1.5) +              // defense
+        //        (pp * 0.5) +                // power play
+        //        (pk * 0.5) +                // penalty kill
+        //        (faceoff * 0.25) +          // faceoffs
+        //        (pointPct * 1.5) +          // overall performance
+        //        (regulationWinRatio * 10);  // bonus for winning in regulation
         //}
 
-        // Helper method to simulate the goal scoring based on attack and defense strength
-        //private static int SimulateGoals(double attackStrength, double defenseStrength, Random rng)
-        //{
-        //    // The idea is to simulate goals scored using attack strength vs. defense strength
-        //    double expectedGoals = attackStrength / (defenseStrength + 1);  // +1 to avoid division by zero
-        //    int goals = Math.Max(0, (int)Math.Round(rng.NextDouble() * expectedGoals * 2)); // Randomize, but within a reasonable range
-        //    return goals;
-        //}
-
-        //public static (Team winner, int goalsA, int goalsB) SimulateGameWithScore(Team teamA, Team teamB, NHLTeamStats statsA, NHLTeamStats statsB)
-        //{
-        //    var rng = new Random();
-
-        //    // Use GoalsForPerGame and GoalsAgainstPerGame to estimate expected goals
-        //    double expectedA = ((statsA.GoalsForPerGame ?? 3.0) + (statsB.GoalsAgainstPerGame ?? 3.0)) / 2;
-        //    double expectedB = ((statsB.GoalsForPerGame ?? 3.0) + (statsA.GoalsAgainstPerGame ?? 3.0)) / 2;
-
-        //    // Add some randomness
-        //    int goalsA = Math.Max(0, (int)Math.Round(NormalDistribution(rng, expectedA, 1.0)));
-        //    int goalsB = Math.Max(0, (int)Math.Round(NormalDistribution(rng, expectedB, 1.0)));
-
-        //    // Overtime logic (just pick a winner in a tie)
-        //    if (goalsA == goalsB)
-        //    {
-        //        if (rng.NextDouble() < 0.5) goalsA++;
-        //        else goalsB++;
-        //    }
-
-        //    return (goalsA > goalsB ? teamA : teamB, goalsA, goalsB);
-        //}
-
-        //public static (Team winner, int team1Goals, int team2Goals) SimulateGameWithScore(
-        //Team team1, Team team2,
-        //NHLTeamStats stats1, NHLTeamStats stats2)
-        //{
-        //    var rnd = new Random();
-
-        //    // Base goals using GPG
-        //    double baseGoals1 = stats1.GoalsForPerGame ?? 3.0;
-        //    double baseGoals2 = stats2.GoalsForPerGame ?? 3.0;
-
-        //    // Estimate PP opportunities based on opponent’s penalty minutes per game
-        //    int ppChances1 = (int)Math.Round((team2.PenaltyMinutesPerGame ?? 10.0) / 2.0); // default to 10 if null
-        //    int ppChances2 = (int)Math.Round((team1.PenaltyMinutesPerGame ?? 10.0) / 2.0);
-
-        //    // Adjust PP conversion rate based on opposing PK
-        //    double adjPP1 = (stats1.PowerPlayPct ?? 20) * (1 - (stats2.PenaltyKillPct ?? 80) / 100.0);
-        //    double adjPP2 = (stats2.PowerPlayPct ?? 20) * (1 - (stats1.PenaltyKillPct ?? 80) / 100.0);
-
-        //    // Expected PP goals
-        //    double ppGoals1 = 0;
-        //    for (int i = 0; i < ppChances1; i++)
-        //    {
-        //        if (rnd.NextDouble() < adjPP1 / 100.0)
-        //            ppGoals1++;
-        //    }
-
-        //    double ppGoals2 = 0;
-        //    for (int i = 0; i < ppChances2; i++)
-        //    {
-        //        if (rnd.NextDouble() < adjPP2 / 100.0)
-        //            ppGoals2++;
-        //    }
-
-        //    // Add some random fluctuation
-        //    int evenStrengthGoals1 = (int)Math.Round(baseGoals1 + rnd.NextDouble() - 0.5);
-        //    int evenStrengthGoals2 = (int)Math.Round(baseGoals2 + rnd.NextDouble() - 0.5);
-
-        //    int totalGoals1 = evenStrengthGoals1 + (int)ppGoals1;
-        //    int totalGoals2 = evenStrengthGoals2 + (int)ppGoals2;
-
-        //    Team winner = totalGoals1 > totalGoals2 ? team1 : team2;
-
-        //    return (winner, totalGoals1, totalGoals2);
-        //}
-
-        public static (Team winner, int goalsTeam1, int goalsTeam2) SimulateGameWithScore(
-        Team team1, Team team2, NHLTeamStats stats1, NHLTeamStats stats2)
+        public static (Team winner, int goalsTeam1, int goalsTeam2) SimulateGameWithScore(Team team1, Team team2, NHLTeamStats stats1, NHLTeamStats stats2)
         {
             var rnd = new Random();
 
@@ -262,19 +163,25 @@ namespace Brain.Helpers
             double pim1 = team1.PenaltyMinutesPerGame ?? 10.0;
             double pim2 = team2.PenaltyMinutesPerGame ?? 10.0;
 
+            // --- Additional factors ---
+            double faceoffAdvantage1 = stats1.FaceoffWinPct ?? 50.0;
+            double faceoffAdvantage2 = stats2.FaceoffWinPct ?? 50.0;
+            double disciplineFactor1 = pim1 > 12.0 ? -0.2 : 0.0;
+            double disciplineFactor2 = pim2 > 12.0 ? -0.2 : 0.0;
+
             // --- Calculate base offensive pressure via shots and goals ---
             double shotPressure1 = shotsFor1 - shotsAgainst2;
             double shotPressure2 = shotsFor2 - shotsAgainst1;
 
-            double baseGoals1 = gpg1 + (shotPressure1 * 0.05) - (gapg2 * 0.2);
-            double baseGoals2 = gpg2 + (shotPressure2 * 0.05) - (gapg1 * 0.2);
+            double baseGoals1 = gpg1 + (shotPressure1 * 0.05) - (gapg2 * 0.2) + disciplineFactor1;
+            double baseGoals2 = gpg2 + (shotPressure2 * 0.05) - (gapg1 * 0.2) + disciplineFactor2;
 
-            // --- Estimate power play opportunities based on penalties taken ---
-            int ppChances1 = (int)Math.Round(pim2 / 2.0); // team1 gets PP based on team2's penalties
+            // --- Estimate power play opportunities ---
+            int ppChances1 = (int)Math.Round(pim2 / 2.0);
             int ppChances2 = (int)Math.Round(pim1 / 2.0);
 
             // --- Adjust for special teams ---
-            double ppGoals1 = ppChances1 * (pp1 / 100.0) * ((100.0 - pk2) / 100.0); // PP% x Opponent PK%
+            double ppGoals1 = ppChances1 * (pp1 / 100.0) * ((100.0 - pk2) / 100.0);
             double ppGoals2 = ppChances2 * (pp2 / 100.0) * ((100.0 - pk1) / 100.0);
 
             // --- Total expected goals before randomness ---
@@ -286,7 +193,7 @@ namespace Brain.Helpers
             expectedGoals2 = Math.Clamp(expectedGoals2, 1.0, 6.5);
 
             // --- Add game-to-game randomness ---
-            double randomness1 = rnd.NextDouble() * 1.5; // randomness factor
+            double randomness1 = rnd.NextDouble() * 1.5;
             double randomness2 = rnd.NextDouble() * 1.5;
 
             int finalGoals1 = (int)Math.Round(expectedGoals1 + randomness1);
@@ -303,8 +210,6 @@ namespace Brain.Helpers
             return (winner, finalGoals1, finalGoals2);
         }
 
-
-
         public static double NormalDistribution(Random rng, double mean, double stdDev)
         {
             // Box-Muller transform
@@ -314,8 +219,7 @@ namespace Brain.Helpers
             return mean + stdDev * randStdNormal;
         }
 
-        public static Dictionary<string, SimulationStats> RunMultipleSimulations(
-    List<Team> teams, List<NHLTeamStats> statsList, int numberOfSimulations)
+        public static Dictionary<string, SimulationStats> RunMultipleSimulations(List<Team> teams, List<NHLTeamStats> statsList, int numberOfSimulations)
         {
             var results = new Dictionary<string, SimulationStats>();
 
@@ -358,6 +262,5 @@ namespace Brain.Helpers
 
             return results;
         }
-
     }
 }

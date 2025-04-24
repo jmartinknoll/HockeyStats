@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models
+﻿namespace Domain.Models
 {
     public class Team
     {
@@ -22,8 +16,6 @@ namespace Domain.Models
         public int TotalGoalsFor { get; set; } = 0;
         public int TotalGoalsAgainst { get; set; } = 0;
 
-        // Optional: to track per round
-        //public List<RoundStats> RoundStats { get; set; } = new();
         public Dictionary<int, RoundStats> RoundStats { get; set; } = new();
 
         public Team Clone()

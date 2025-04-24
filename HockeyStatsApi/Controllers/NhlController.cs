@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Domain.Interfaces;
+﻿using Domain.Interfaces;
+using HockeyStatsApp.Commands;
 using MediatR;
-using HockeyStatsApp.Queries;
+using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -17,25 +17,16 @@ public class NhlStatsController : ControllerBase
     }
 
     [HttpGet("team-stats")]
-    public async Task<ActionResult> GetTeamStats()
+    public async Task<ActionResult> SolveLitcoPlayoffPool()
     {
-        //var query = new GetHockeyStatsQuery();
+        var query = new SolveLitcoPlayoffPoolCommand();
 
-        //var resp = await _mediator.Send(query);
-        //if (!resp.Success)
-        //{
-        //    return StatusCode(500, resp.ErrorMessage);
-        //}
-        //return Ok(resp.Value);
-
-        var query = new GetHockeyStatsQuery();
         var resp = await _mediator.Send(query);
-
         if (!resp.Success)
         {
             return StatusCode(500, resp.ErrorMessage);
         }   
 
-        return Ok(resp.Value); // return raw JSON for debugging
+        return Ok(resp.Value);
     }
 }
