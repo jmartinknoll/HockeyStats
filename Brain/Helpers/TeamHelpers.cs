@@ -1,4 +1,4 @@
-﻿using Domain.Models;
+﻿using Domain.Models.HockeyStatsCustom;
 
 namespace Brain.Helpers
 {

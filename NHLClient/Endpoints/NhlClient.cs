@@ -1,5 +1,5 @@
 ﻿using Domain.Interfaces;
-using Domain.Models.HockeyStatsApi;
+using Domain.Models.NhlApi;
 using Newtonsoft.Json;
 using System.Text.Json;
 

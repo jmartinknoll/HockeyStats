@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.HockeyStatsApi
+﻿namespace Domain.Models.NhlApi
 {
     public class NHLSkaterStatsLeader
     {

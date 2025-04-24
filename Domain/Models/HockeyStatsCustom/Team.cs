@@ -1,4 +1,4 @@
-﻿namespace Domain.Models
+﻿namespace Domain.Models.HockeyStatsCustom
 {
     public class Team
     {
@@ -22,12 +22,12 @@
         {
             return new Team
             {
-                Name = this.Name,
-                Code = this.Code,
-                Division = this.Division,
-                Conference = this.Conference,
-                Seed = this.Seed,
-                PenaltyMinutesPerGame = this.PenaltyMinutesPerGame,
+                Name = Name,
+                Code = Code,
+                Division = Division,
+                Conference = Conference,
+                Seed = Seed,
+                PenaltyMinutesPerGame = PenaltyMinutesPerGame,
 
                 // Reset playoff simulation stats
                 TotalGamesPlayed = 0,

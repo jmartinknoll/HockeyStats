@@ -1,6 +1,6 @@
-﻿using Domain.Models.HockeyStatsApi;
+﻿using Domain.Models.NhlApi;
 
-namespace Domain.Models
+namespace Domain.Models.HockeyStatsCustom
 {
     public class Player
     {

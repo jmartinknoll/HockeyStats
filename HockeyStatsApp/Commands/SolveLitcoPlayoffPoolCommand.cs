@@ -2,7 +2,7 @@
 using Domain.Interfaces;
 using Brain.Helpers;
 using Domain.Models;
-using Domain.Models.HockeyStatsApi;
+using Domain.Models.NhlApi;
 
 namespace HockeyStatsApp.Commands
 {

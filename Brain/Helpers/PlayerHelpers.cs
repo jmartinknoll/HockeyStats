@@ -1,5 +1,5 @@
-﻿using Domain.Models;
-using Domain.Models.HockeyStatsApi;
+﻿using Domain.Models.HockeyStatsCustom;
+using Domain.Models.NhlApi;
 
 namespace Brain.Helpers
 {

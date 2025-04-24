@@ -1,4 +1,4 @@
-﻿using Domain.Models.HockeyStatsApi;
+﻿using Domain.Models.NhlApi;
 
 namespace Domain.Interfaces
 {
