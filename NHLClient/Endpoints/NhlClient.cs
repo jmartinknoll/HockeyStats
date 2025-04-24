@@ -1,4 +1,5 @@
 ﻿using Domain.Interfaces;
+using Domain.Models.HockeyStatsApi;
 using Newtonsoft.Json;
 using System.Text.Json;
 

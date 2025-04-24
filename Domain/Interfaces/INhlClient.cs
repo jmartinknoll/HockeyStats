@@ -1,4 +1,6 @@
-﻿namespace Domain.Interfaces
+﻿using Domain.Models.HockeyStatsApi;
+
+namespace Domain.Interfaces
 {
     public interface INhlClient
     {
